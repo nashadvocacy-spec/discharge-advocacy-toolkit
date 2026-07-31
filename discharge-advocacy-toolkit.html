@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discharge Advocacy Toolkit</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+.container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+.header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+.header h1 { font-size: 28px; margin-bottom: 10px; font-weight: 700; }
+.header p { font-size: 16px; opacity: 0.95; line-height: 1.5; }
+.progress-bar { height: 4px; background: #e0e0e0; margin-top: 20px; }
+.progress-fill { height: 100%; background: white; transition: width 0.3s ease; }
+.content { padding: 40px 30px; }
+.section { display: none; }
+.section.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.form-group { margin-bottom: 25px; }
+label { display: block; font-weight: 600; margin-bottom: 10px; color: #333; font-size: 15px; }
+input[type="text"], input[type="email"], input[type="tel"], textarea, select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; transition: border-color 0.3s ease; font-family: inherit; }
+input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, textarea:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+textarea { min-height: 100px; resize: vertical; }
+.radio-group { display: flex; gap: 20px; flex-wrap: wrap; }
+.radio-option { display: flex; align-items: center; }
+input[type="radio"] { margin-right: 10px; cursor: pointer; width: 18px; height: 18px; }
+.radio-option label { margin: 0; font-weight: 500; cursor: pointer; }
+.button-group { display: flex; gap: 12px; margin-top: 30px; justify-content: space-between; }
+button { padding: 12px 30px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+.btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; flex: 1; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); }
+.btn-secondary { background: #f0f0f0; color: #333; flex: 1; }
+.btn-secondary:hover { background: #e0e0e0; }
+.results { display: none; }
+.results.active { display: block; }
+.result-section { margin-bottom: 35px; padding-bottom: 35px; border-bottom: 2px solid #f0f0f0; }
+.result-section:last-child { border-bottom: none; }
+.result-section h3 { color: #667eea; font-size: 20px; margin-bottom: 15px; }
+.checklist-item { display: flex; gap: 12px; margin-bottom: 12px; padding: 12px; background: #f8f9fa; border-radius: 6px; align-items: flex-start; }
+.checklist-item input[type="checkbox"] { margin-top: 3px; cursor: pointer; flex-shrink: 0; }
+.checklist-item label { margin: 0; font-weight: 500; cursor: pointer; flex: 1; }
+.letter-template { background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea; margin-bottom: 15px; white-space: pre-wrap; word-wrap: break-word; font-size: 14px; line-height: 1.6; color: #333; font-family: 'Courier New', monospace; }
+.step-indicator { text-align: center; color: #999; margin-bottom: 20px; font-size: 14px; }
+.success-message { background: #d4edda; color: #155724; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #28a745; }
+@media print { body { background: white; padding: 0; } .container { box-shadow: none; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>Discharge Advocacy Toolkit</h1>
+<p>Professional resources to help patients and family advocates communicate effectively with healthcare providers during early discharge situations</p>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+<div class="content">
+
+<div class="section active" id="section1">
+<div class="step-indicator">Step 1 of 3</div>
+<h2>Let's Get Started</h2>
+<p style="margin-bottom: 25px; color: #666; line-height: 1.6;">This toolkit provides professional letters, checklists, and communication strategies to help you advocate effectively when facing premature hospital discharge or communication breakdowns with your healthcare team.</p>
+<div class="form-group">
+<label>Who is this for?</label>
+<div class="radio-group">
+<div class="radio-option"><input type="radio" id="rolePatient" name="role" value="patient" checked><label for="rolePatient">Patient (self-advocating)</label></div>
+<div class="radio-option"><input type="radio" id="roleFamily" name="role" value="family"><label for="roleFamily">Family Member/Advocate</label></div>
+</div>
+</div>
+<div class="button-group"><button class="btn-primary" onclick="nextSection(1)">Continue</button></div>
+</div>
+
+<div class="section" id="section2">
+<div class="step-indicator">Step 2 of 3</div>
+<h2>Patient &amp; Situation Details</h2>
+<div class="form-group"><label>Patient Name</label><input type="text" id="patientName" placeholder="Full name"></div>
+<div class="form-group"><label>Your Name</label><input type="text" id="yourName" placeholder="Full name"></div>
+<div class="form-group"><label>Your Phone</label><input type="tel" id="yourPhone" placeholder="Phone number"></div>
+<div class="form-group"><label>Hospital/Facility Name</label><input type="text" id="hospitalName" placeholder="Name of hospital"></div>
+<div class="form-group"><label>Primary Doctor Name</label><input type="text" id="doctorName" placeholder="Doctor's full name"></div>
+<div class="button-group"><button class="btn-secondary" onclick="previousSection(2)">Back</button><button class="btn-primary" onclick="nextSection(2)">Continue</button></div>
+</div>
+
+<div class="section" id="section3">
+<div class="step-indicator">Step 3 of 3</div>
+<h2>Describe the Situation</h2>
+<div class="form-group"><label>What is the primary medical issue?</label><input type="text" id="medicalIssue" placeholder="e.g., Major surgery recovery, heart attack, acute infection"></div>
+<div class="form-group"><label>Why do you believe discharge is premature or problematic?</label><textarea id="dischargeReason" placeholder="Describe your concerns about the discharge..."></textarea></div>
+<div class="form-group"><label>What care or support will be needed after discharge?</label><textarea id="careNeeds" placeholder="e.g., Physical therapy, medication management, wound care, monitoring..."></textarea></div>
+<div class="button-group"><button class="btn-secondary" onclick="previousSection(3)">Back</button><button class="btn-primary" onclick="generateResults()">Generate Resources</button></div>
+</div>
+
+<div class="results" id="results">
+<div class="success-message">&#10003; Your personalized advocacy toolkit has been generated. Print or save these resources to share with your healthcare team.</div>
+
+<div class="result-section">
+<h3>Pre-Discharge Safety Checklist</h3>
+<p style="margin-bottom: 15px; color: #666;">Before discharge, verify these items are addressed:</p>
+<div class="checklist-item"><input type="checkbox" id="check1"><label for="check1">Clear discharge medication list (names, doses, frequencies, side effects)</label></div>
+<div class="checklist-item"><input type="checkbox" id="check2"><label for="check2">Discharge instructions in writing (diet, activity restrictions, wound care)</label></div>
+<div class="checklist-item"><input type="checkbox" id="check3"><label for="check3">Follow-up appointments scheduled (surgeon, primary care, specialists)</label></div>
+<div class="checklist-item"><input type="checkbox" id="check4"><label for="check4">Contact information for questions (24/7 hotline, on-call provider)</label></div>
+</div>
+
+<div class="result-section">
+<h3>Letter to Discharging Doctor</h3>
+<p style="margin-bottom: 15px; color: #666;">Copy, personalize, and send to your doctor:</p>
+<div class="letter-template" id="letter1"></div>
+</div>
+
+<div class="result-section">
+<h3>Key Questions to Ask Doctors</h3>
+<p style="margin-bottom: 15px; color: #666;">Use these in conversations with healthcare providers:</p>
+<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea;">
+<ul style="list-style: none; color: #333; line-height: 1.8;">
+<li>&#8226; "What specific medical goals must be met before discharge?"</li>
+<li>&#8226; "What are the risks of discharging on this timeline?"</li>
+<li>&#8226; "How will we monitor for complications after discharge?"</li>
+<li>&#8226; "Is there a clinical reason we can't delay discharge 24-48 hours?"</li>
+<li>&#8226; "What home health services are being arranged?"</li>
+<li>&#8226; "Who do I call if a complication occurs?"</li>
+</ul>
+</div>
+</div>
+
+<div style="text-align: center; margin-top: 40px;"><button class="btn-secondary" onclick="restartToolkit()" style="width: 100%;">Create Another Assessment</button></div>
+</div>
+
+</div>
+</div>
+
+<script>
+var currentSection = 1;
+
+function nextSection(current) {
+  document.getElementById('section' + current).classList.remove('active');
+  currentSection = current + 1;
+  document.getElementById('section' + currentSection).classList.add('active');
+  updateProgress();
+  window.scrollTo(0, 0);
+}
+
+function previousSection(current) {
+  document.getElementById('section' + current).classList.remove('active');
+  currentSection = current - 1;
+  document.getElementById('section' + currentSection).classList.add('active');
+  updateProgress();
+  window.scrollTo(0, 0);
+}
+
+function val(id, fallback) {
+  var el = document.getElementById(id);
+  var v = el && el.value ? el.value.trim() : '';
+  return v || fallback;
+}
+
+function buildLetter() {
+  var today = new Date().toLocaleDateString();
+  var patient = val('patientName', '[Patient Name]');
+  var you = val('yourName', '[Your Name]');
+  var phone = val('yourPhone', '[Your Phone]');
+  var hospital = val('hospitalName', '[Hospital Name]');
+  var doctor = val('doctorName', 'Doctor');
+  var issue = val('medicalIssue', 'a serious medical condition');
+  var reason = val('dischargeReason', 'The patient does not yet appear medically stable enough for a safe discharge.');
+  var needs = val('careNeeds', 'Ongoing monitoring and support that cannot currently be managed safely at home.');
+  var role = document.getElementById('roleFamily') && document.getElementById('roleFamily').checked ? 'family member and advocate for' : 'the patient,';
+
+  return today + '\n\n' +
+    'Re: Concern Regarding Discharge Plan for ' + patient + '\n' +
+    hospital + '\n\n' +
+    'Dear Dr. ' + doctor + ',\n\n' +
+    'I am writing as ' + role + ' ' + patient + ' to express serious concerns about the proposed discharge plan.\n\n' +
+    'Current Situation:\n' +
+    patient + ' is recovering from ' + issue + ' and requires continued monitoring and care.\n\n' +
+    'Specific Concerns:\n' + reason + '\n\n' +
+    'Care Needed After Discharge:\n' + needs + '\n\n' +
+    'Request:\n' +
+    'I respectfully request that you:\n' +
+    '1. Delay discharge until the patient is medically stable\n' +
+    '2. Provide a clear timeline for when safe discharge is anticipated\n' +
+    '3. Arrange necessary post-discharge support services\n' +
+    '4. Schedule comprehensive follow-up care before discharge\n\n' +
+    'I am committed to supporting the recovery process and am available to discuss this further at any time.\n\n' +
+    'Thank you for your consideration.\n\n' +
+    'Respectfully,\n' + you + '\n' + phone;
+}
+
+function generateResults() {
+  document.getElementById('letter1').textContent = buildLetter();
+  document.getElementById('section3').classList.remove('active');
+  document.getElementById('results').classList.add('active');
+  currentSection = 4;
+  updateProgress();
+  window.scrollTo(0, 0);
+}
+
+function restartToolkit() { location.reload(); }
+
+function updateProgress() {
+  document.getElementById('progressFill').style.width = ((currentSection / 4) * 100) + '%';
+}
+
+updateProgress();
+</script>
+</body>
+</html>
