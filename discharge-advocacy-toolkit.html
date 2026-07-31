@@ -9,6 +9,9 @@
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
 .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
 .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+.header-logo { max-height: 70px; max-width: 260px; margin-bottom: 18px; background: white; padding: 10px 16px; border-radius: 8px; }
+.site-footer { background: #f8f9fa; border-top: 3px solid #667eea; padding: 22px 30px; text-align: center; color: #333; font-size: 15px; line-height: 1.7; }
+.site-footer a { color: #667eea; font-weight: 600; text-decoration: none; }
 .header h1 { font-size: 28px; margin-bottom: 10px; font-weight: 700; }
 .header p { font-size: 16px; opacity: 0.95; line-height: 1.5; }
 .progress-bar { height: 4px; background: #e0e0e0; margin-top: 20px; }
@@ -49,6 +52,7 @@ button { padding: 12px 30px; border: none; border-radius: 8px; font-size: 15px; 
 <body>
 <div class="container">
 <div class="header">
+<img src="logo.png" alt="Nash Advocacy" class="header-logo" onerror="this.style.display='none'">
 <h1>Discharge Advocacy Toolkit</h1>
 <p>Professional resources to help patients and family advocates communicate effectively with healthcare providers during early discharge situations</p>
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -125,6 +129,10 @@ button { padding: 12px 30px; border: none; border-radius: 8px; font-size: 15px; 
 <div style="text-align: center; margin-top: 40px;"><button class="btn-secondary" onclick="restartToolkit()" style="width: 100%;">Create Another Assessment</button></div>
 </div>
 
+</div>
+<div class="site-footer">
+<strong>Need additional help?</strong><br>
+Please call or text <strong>Rachel Nash, BCPA</strong> at <a href="tel:+17042541407">704-254-1407</a>
 </div>
 </div>
 
