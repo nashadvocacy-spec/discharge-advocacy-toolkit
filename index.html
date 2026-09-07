@@ -50,6 +50,18 @@ button { padding: 12px 30px; border: none; border-radius: 8px; font-size: 15px; 
 
 /* Download bar on the results screen */
 .download-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 30px; }
+.emailbox { border: 2px solid #e0e0e0; background: #f4f2fd; border-radius: 12px; padding: 22px; margin-bottom: 30px; }
+.emailbox h4 { margin: 0 0 6px; font-size: 17px; color: #333; }
+.emailbox p { margin: 0 0 4px; font-size: 14.5px; color: #555; line-height: 1.6; }
+.emailbox label { display: block; font-weight: 600; color: #333; margin: 16px 0 6px; font-size: 15px; }
+.emailbox input[type="email"] { max-width: 360px; background: #fff; }
+.emailrow { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+.emailrow button { flex: 0 1 auto; }
+.emailnote { font-size: 13px; color: #777; margin-top: 12px; line-height: 1.6; }
+.fallback { display: none; margin-top: 18px; padding-top: 16px; border-top: 1px dashed #c8bff0; }
+.fallback h5 { margin: 0 0 6px; font-size: 15px; color: #333; }
+.toolong { display: none; background: #fef6e7; border-left: 4px solid #b45309; border-radius: 0 8px 8px 0; padding: 12px 14px; margin-bottom: 14px; font-size: 14px; color: #7a3c06; }
+.linkout { display: none; margin-top: 12px; font-size: 12.5px; color: #666; word-break: break-all; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 9px 11px; }
 .download-bar button { flex: 1; min-width: 180px; }
 .btn-download { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-download:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); }
@@ -69,7 +81,7 @@ button { padding: 12px 30px; border: none; border-radius: 8px; font-size: 15px; 
 @media print {
   body { background: white; padding: 0; }
   .container { box-shadow: none; }
-  .download-bar, .help-box, #restartBtn, .progress-bar { display: none !important; }
+  .download-bar, .help-box, #restartBtn, .progress-bar, .no-print { display: none !important; }
 }
 @media (max-width: 600px) {
   .download-bar button { min-width: 100%; }
@@ -126,6 +138,31 @@ button { padding: 12px 30px; border: none; border-radius: 8px; font-size: 15px; 
 <div class="download-bar">
 <button class="btn-download" id="pdfBtn" onclick="downloadPDF()">&#8681;&nbsp; Download as PDF</button>
 <button class="btn-secondary" onclick="window.print()">Print this page</button>
+</div>
+
+<div class="emailbox no-print" id="emailbox">
+<h4>Want this on a computer so you can print it?</h4>
+<p>Send yourself a link that reopens this page with everything you typed already filled in. Open it on a computer, then download the PDF and print it.</p>
+<label for="myemail">Your email address</label>
+<input type="email" id="myemail" placeholder="you@example.com" autocomplete="email">
+<div class="emailrow">
+<button class="btn-primary" onclick="openEmail('mailto')">Email it to myself</button>
+<button class="btn-secondary" onclick="showFallback()">My email did not open</button>
+</div>
+<p class="emailnote">This opens your own email app. The link carries what you typed, and it stays in your email. Nothing is sent to us and nothing is stored on a server.</p>
+<div class="fallback" id="fallback">
+<div class="toolong" id="tooLong"><b>This is too detailed to fit in a plain email link.</b> Use Gmail, Outlook, or copy the message below instead, and it will all come through.</div>
+<h5>Nothing happened when you clicked?</h5>
+<p>That usually means this device has no email app set to open on its own, which is normal if you read mail in a web browser. Any of these will work instead.</p>
+<div class="emailrow">
+<button class="btn-secondary" onclick="openEmail('gmail')">Open in Gmail</button>
+<button class="btn-secondary" onclick="openEmail('outlook')">Open in Outlook</button>
+<button class="btn-secondary" id="msgBtn" onclick="copyMsg(this)">Copy the whole message</button>
+<button class="btn-secondary" id="linkBtn" onclick="copyLink(this)">Copy just the link</button>
+</div>
+<div class="linkout" id="linkOut"></div>
+<p class="emailnote">If you copy, paste it into a new email to yourself, or into a text message. It works the same way.</p>
+</div>
 </div>
 
 <div class="result-section">
@@ -243,6 +280,151 @@ document.getElementById('results').classList.add('active');
 currentSection = 4;
 updateProgress();
 window.scrollTo(0, 0);
+}
+
+
+/* ============================================================
+   Email it to yourself.
+   A static page cannot send mail, so this opens the reader's own
+   email app with a link that reopens this toolkit with their
+   answers already filled in. The answers ride in the URL fragment,
+   which browsers never send to any server.
+   ============================================================ */
+var SAVE_FIELDS = ['patientName', 'yourName', 'yourPhone', 'hospitalName', 'doctorName',
+                   'medicalIssue', 'dischargeReason', 'careNeeds'];
+var SAVE_CHECKS = ['check1', 'check2', 'check3', 'check4'];
+
+function b64urlEncode(str) {
+  return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function b64urlDecode(str) {
+  var s = String(str).replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) s += '=';
+  return decodeURIComponent(escape(atob(s)));
+}
+function reopenURL() {
+  var o = {};
+  var fam = document.getElementById('roleFamily');
+  o.role = (fam && fam.checked) ? 'family' : 'patient';
+  for (var i = 0; i < SAVE_FIELDS.length; i++) {
+    var el = document.getElementById(SAVE_FIELDS[i]);
+    if (el && el.value && el.value.trim()) o[SAVE_FIELDS[i]] = el.value.trim();
+  }
+  var done = [];
+  for (var j = 0; j < SAVE_CHECKS.length; j++) {
+    var c = document.getElementById(SAVE_CHECKS[j]);
+    if (c && c.checked) done.push(SAVE_CHECKS[j]);
+  }
+  if (done.length) o.checked = done;
+  var base = location.protocol + '//' + location.host + location.pathname;
+  return base + '#r=' + b64urlEncode(JSON.stringify(o));
+}
+function restoreFromHash() {
+  var m = (location.hash || '').match(/^#r=(.+)$/);
+  if (!m) return false;
+  var o;
+  try { o = JSON.parse(b64urlDecode(m[1])); } catch (e) { return false; }
+  if (o.role === 'family') {
+    var f = document.getElementById('roleFamily'); if (f) f.checked = true;
+  } else {
+    var p = document.getElementById('rolePatient'); if (p) p.checked = true;
+  }
+  for (var i = 0; i < SAVE_FIELDS.length; i++) {
+    var el = document.getElementById(SAVE_FIELDS[i]);
+    if (el && o[SAVE_FIELDS[i]]) el.value = o[SAVE_FIELDS[i]];
+  }
+  generateResults();
+  if (o.checked) {
+    for (var j = 0; j < o.checked.length; j++) {
+      var c = document.getElementById(o.checked[j]);
+      if (c) c.checked = true;
+    }
+  }
+  return true;
+}
+
+function emailParts() {
+  var url = reopenURL();
+  var who = val('patientName', '') || 'this discharge';
+  var subject = 'Discharge advocacy documents for ' + who;
+  var sign =
+    'Nash Patient Advocacy & Consulting\n' +
+    'Rachel Nash, MRC, BCPA\n' +
+    '704-254-1407\n' +
+    'nashadvocacy.com\n\n' +
+    'Advocacy and communication support only. Not medical, legal, or insurance advice.';
+  var full =
+    'Here is your link back to the Discharge Advocacy Toolkit, with everything already filled in:\n\n' +
+    url + '\n\n' +
+    'Open it on a computer and click "Download as PDF." That gives you the safety checklist, the letter for the discharging physician, and the questions to ask the care team, all on your own paper.\n\n' +
+    'If you already saved the PDF on your phone, you can attach it to this email before you send it.\n\n' +
+    sign;
+  var brief = 'Your link back to the Discharge Advocacy Toolkit:\n\n' + url + '\n\n' +
+    'Open it on a computer and download the PDF to print.\n\n' + sign;
+  return { url: url, subject: subject, full: full, brief: brief };
+}
+function showFallback() {
+  var f = document.getElementById('fallback');
+  f.style.display = 'block';
+  f.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function openEmail(how) {
+  var p = emailParts();
+  var to = (document.getElementById('myemail').value || '').trim();
+  if (how === 'gmail') {
+    window.open('https://mail.google.com/mail/?view=cm&fs=1&tf=1' +
+      '&to=' + encodeURIComponent(to) + '&su=' + encodeURIComponent(p.subject) +
+      '&body=' + encodeURIComponent(p.full), '_blank', 'noopener');
+    return;
+  }
+  if (how === 'outlook') {
+    window.open('https://outlook.live.com/mail/0/deeplink/compose?' +
+      'to=' + encodeURIComponent(to) + '&subject=' + encodeURIComponent(p.subject) +
+      '&body=' + encodeURIComponent(p.full), '_blank', 'noopener');
+    return;
+  }
+  function mk(body) {
+    return 'mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(p.subject) +
+      '&body=' + encodeURIComponent(body);
+  }
+  var href = mk(p.full);
+  if (href.length > 1900) href = mk(p.brief);
+  if (href.length > 1900) href = mk(p.url);
+  if (href.length > 1900) {
+    var n = document.getElementById('tooLong');
+    if (n) n.style.display = 'block';
+    showFallback();
+    return;
+  }
+  try { window.location.href = href; } catch (e) {}
+  setTimeout(showFallback, 900);
+}
+function copyMsg(btn) {
+  var p = emailParts();
+  copyText('Subject: ' + p.subject + '\n\n' + p.full, btn, 'Message copied');
+}
+function copyLink(btn) {
+  var url = reopenURL();
+  var out = document.getElementById('linkOut');
+  out.textContent = url; out.style.display = 'block';
+  copyText(url, btn, 'Link copied');
+}
+function copyText(text, btn, msg) {
+  var label = btn.textContent;
+  var done = function () {
+    btn.textContent = msg;
+    setTimeout(function () { btn.textContent = label; }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+  } else { fallbackCopy(text, done); }
+}
+function fallbackCopy(t, done) {
+  var a = document.createElement('textarea');
+  a.value = t; a.style.position = 'fixed'; a.style.left = '-9999px';
+  document.body.appendChild(a); a.select();
+  try { document.execCommand('copy'); done(); } catch (e) {}
+  document.body.removeChild(a);
 }
 
 function restartToolkit() { location.reload(); }
@@ -567,6 +749,9 @@ function downloadPDF() {
 }
 
 updateProgress();
+
+/* If this page was opened from an emailed link, rebuild everything. */
+try { restoreFromHash(); } catch (e) {}
 </script>
 </body>
 </html>
